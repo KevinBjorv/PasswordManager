@@ -15,27 +15,31 @@ void PasswordManager::run() {
 	menu.displayMainMenu();
 }
 
-bool PasswordManager::login(const std::string& username, std::string& userPassword) {
+std::shared_ptr<User> PasswordManager::login(const std::string& username, std::string& userPassword) {
 	std::string hashedPassword = hashPassword(userPassword);
-	std::string fileName = "data/" + username + ".json";
-
 	currentUser = std::make_shared<User>();
-	if (currentUser->loadFromFile(fileName) && currentUser->getPasswordHash() == hashedPassword) {
+
+	if (Database::loadUser(*currentUser, username) && currentUser->getPasswordHash() == hashedPassword) { 
 		std::cout << "Login successful" << std::endl;
-		return true;
+		if (currentUser) {
+			return currentUser; // Return the shared pointer
+		}
+		else {
+			std::cerr << "User was nullptr" << std::endl;
+			return nullptr;
+		}
 	}
 	else {
-		std::cout << "Login failed" << std::endl;
-		currentUser.reset();
-		return false;
+		currentUser.reset(); // Reset the shared pointer
+		return nullptr; // Error message will be displayed in MenuManager
 	}
 }
 
-bool PasswordManager::registerUser(const std::string& newUsername, std::string& newUserPassword) {
+bool PasswordManager::registerUser(const std::string& newUsername, const std::string& newUserPassword) {
 	std::string hashedPassword = hashPassword(newUserPassword);
-	std::cout << "Hashed password: " << hashedPassword << std::endl; // Debugging
+	currentUser = std::make_shared<User>(newUsername, hashedPassword);
 
-	if (currentUser->saveToFile()) {
+	if (Database::saveUser(*currentUser)) {
 		std::cout << "User registered successfully" << std::endl;
 		return true;
 	}
@@ -63,7 +67,7 @@ void PasswordManager::addPasswordEntry() {
 	PasswordEntry entry(siteName, username, password);
 	currentUser->addPasswordEntry(entry);
 
-	if (currentUser->saveToFile()){
+	if (true){ // Temp debug
 		std::cout << "Password entry added successfully" << std::endl;
 	}
 	else {

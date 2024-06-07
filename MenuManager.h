@@ -2,7 +2,8 @@
 
 #include "PasswordManager.h"
 
-#include "Dashboard.h"
+class Dashboard; // Forward declaration
+
 class MenuManager : public PasswordManager { // Display menu related to PasswordManager
 public:
 	void displayMainMenu(); // Returns the choice
@@ -13,6 +14,5 @@ public:
 
 private: 
 	void handleMainMenuChoice(std::string& choice); // Converts text choice to int
-	Dashboard* dashboard(std::shared_ptr<User> currentUser); // Display dashboard when user is logged in
 };
 

@@ -1,4 +1,5 @@
 #include "MenuManager.h"
+#include "Dashboard.h"
 #include <iostream>
 #include <string>
 
@@ -58,13 +59,15 @@ void MenuManager::displayLogin() {
 	std::cin >> username;
 	std::cout << "Enter password: ";
 	std::cin >> password;
+	
 
-	if (login(username, password)) {
-		//std::cout << "Login successful" << std::endl;  TODO: Add log of logins
-		dashboard(currentUser); // Display dashboard
+	std::shared_ptr<User> user = login(username, password);
+	if (user) {
+		Dashboard dashboard(user);
+		dashboard.open();
 	}
 	else {
-		std::cout << "Login failed" << std::endl;
+		std::cerr << "Login failed: User can not be null pointer" << std::endl;
 	}
 }
 

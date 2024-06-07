@@ -1,6 +1,11 @@
 #include "Database.h"
 #include "PasswordEntry.h"
+#include "User.h"
+#include "Encryption.h"
+#include "Global.h"
+#include <nlohmann/json.hpp>
 #include <fstream>
+#include <iostream>
 
 Database::Database() {
 	// Constructor
@@ -10,13 +15,55 @@ Database::~Database() {
 	// Destructor
 }
 
-void Database::loadUsers() {
-    // Implementation for loading users from a file
+bool Database::saveUser(const User& user) {
+	Global global;
+	nlohmann::json j;
+	j["username"] = user.getUsername();
+	j["passwordHash"] = user.getPasswordHash();
+	j["passwordEntries"] = nlohmann::json::array();
+
+    for (const auto& entry : user.getPasswordEntries()) {
+		nlohmann::json entryJson;
+		entryJson["siteName"] = entry.getSiteName();
+		entryJson["username"] = entry.getUsername();
+		entryJson["password"] = entry.getPassword();
+		j["passwordEntries"].push_back(entryJson);
+    }
+    std::string userDirectory = global.getBaseDirectory() + "/Resources/Users/" + user.getUsername() + ".json";
+	std::cout << userDirectory << std::endl; // Temp debug
+	std::ofstream file(userDirectory);
+	if (!file.is_open()) {
+		return false;
+	}
+
+	file << j.dump(4); // Pretty print with 4 spaces
+	file.close();
+	return true;
 }
 
-void Database::saveUsers() {
-    // Implementation for saving users to a file
+bool Database::loadUser(User& user, const std::string& username) {
+	Global global;
+	std::string filePath = global.getBaseDirectory() + "/Resources/Users/" + username + ".json";
+	std::ifstream file(filePath);
+	if (!file.is_open()) {
+		return false;
+	}
+
+	nlohmann::json j;
+	file >> j;
+	file.close();
+
+	user.setUsername(j["username"]); // Temp debug
+	user.setPasswordHash(j["passwordHash"]);
+
+	for (const auto& entryJson : j["passwordEntries"]) {
+		PasswordEntry entry(entryJson["siteName"], entryJson["username"], entryJson["password"]);
+		user.addPasswordEntry(entry);
+	}
+	return true;
 }
+
+
 
 void Database::loadPasswordEntries() {
     // Implementation for loading password entries from a file
@@ -34,11 +81,3 @@ void Database::addPasswordEntry(std::shared_ptr<PasswordEntry> entry) {
     passwordEntries.push_back(entry);
 }
 
-std::shared_ptr<User> Database::findUser(const std::string& username) {
-    for (auto& user : users) {
-        if (user->getUsername() == username) {
-            return user;
-        }
-    }
-    return nullptr;
-}

@@ -15,12 +15,12 @@ public:
 	std::string getPasswordHash() const;
 	const std::vector<PasswordEntry>& getPasswordEntries() const;
 
+	// Setters
+	void setUsername(const std::string& username);
+	void setPasswordHash(const std::string& passwordHash);
+
+	// Add password entry
 	void addPasswordEntry(const PasswordEntry& entry);
-	
-	bool saveToFile() const;
-	bool loadFromFile(const std::string& fileName);
-
-
 private: 
 	std::string username;
 	std::string passwordHash;

@@ -13,8 +13,8 @@ public:
 	void run();
 protected: 
 	// User methods - Returns true if successful
-	bool login(const std::string& username, std::string& userPassword);
-	bool registerUser(const std::string& newUsername, std::string& newUserPassword);
+	std::shared_ptr<User> login(const std::string& username, std::string& userPassword);
+	bool registerUser(const std::string& newUsername, const std::string& newUserPassword);
 
 	// PasswordEntry methods
 	void addPasswordEntry();
