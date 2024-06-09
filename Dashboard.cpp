@@ -53,10 +53,14 @@ void Dashboard::viewPasswords() {
     else {
         for (const auto& entry : entries) {
             std::string decryptedPassword = crypt::decrypt(entry.getEncryptedPassword(), currentUser->getPasswordHash(), currentUser->getSalt());
+            if (decryptedPassword.empty()) {
+                std::cout << RED << "Failed to decrypt site" << std::endl;
+                continue;
+            }
             std::cout << "Site: " << ANSI_BOLD_WHITE << entry.getSiteName() << RESET << ", Username: " << ANSI_BOLD_WHITE << entry.getUsername() << RESET << ", Password: " << ANSI_BOLD_WHITE << decryptedPassword << std::endl;
-			char temp = _getch();
-            utility::clearScreen();
         }
+        char temp = _getch();
+        utility::clearScreen();
     }
 }
 

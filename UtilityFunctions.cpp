@@ -25,9 +25,6 @@ namespace utility{
 				std::cerr << "Unsupported Console/OS" << endl;
 		#endif
 	}
-
-
-
 }
 
 // Path: UtilityFunctions.cpp

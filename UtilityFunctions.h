@@ -12,10 +12,6 @@ namespace utility {
 	void setConsoleTitle(const std::string& title);
 	
 	void clearScreen();
-
-
-
-
 }
 
 //Path: UtilityFunctions.h
