@@ -4,6 +4,8 @@
 #include "ColorDefinitons.h"
 #include <iostream>
 #include <string>
+#include <conio.h>
+
 void MenuManager::displayMainMenu() {
 	utility::setConsoleTitle("Password Manager - Main Menu");
 	std::string choice;
@@ -17,8 +19,8 @@ void MenuManager::displayMainMenu() {
 	handleMainMenuChoice(choice);
 }
 
-void MenuManager::handleMainMenuChoice(std::string& choice) {
-	utility::convertToLowercase(choice);
+void MenuManager::handleMainMenuChoice(std::string& rawChoice) {
+	std::string choice = utility::convertToLowercase(rawChoice);
 	if (choice == "1" || choice == "log in" || choice == "login") {
 		std::cout << "\n";
 		displayLogin();
@@ -31,7 +33,10 @@ void MenuManager::handleMainMenuChoice(std::string& choice) {
 		exit(0);
 	}
 	else {
-		std::cout << RED << "Invalid choice. Please try again\n";
+		std::cout << RED << "Invalid choice - Please try again (Press any key to continue)" << RESET;
+		char temp = _getch();
+		utility::clearScreen();
+		displayMainMenu();
 	}
 }
 
@@ -50,7 +55,10 @@ void MenuManager::displayRegisterUser() {
 		std::cout << "Registration successful\n";
 	}
 	else {
-		std::cout << "Registration failed\n";
+		std::cout << RED << "Registration failed (Press any key to continue)" << RESET;
+		char temp = _getch();
+		utility::clearScreen();
+		displayMainMenu();
 	}
 }
 
@@ -71,7 +79,10 @@ void MenuManager::displayLogin() {
 		dashboard.open();
 	}
 	else {
-		std::cerr << "Login failed: User can not be null pointer" << std::endl;
+		std::cerr << RED << "Log in failed, likely invalid credentials (Press any key to continue)" << RESET;
+		char temp = _getch();
+		utility::clearScreen();	
+		displayMainMenu();
 	}
 }
 

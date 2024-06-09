@@ -3,7 +3,6 @@
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
-- [Project Structure](#project-structure)
 - [Dependencies](#dependencies)
 - [Building the Project](#building-the-project)
 - [Running the Application](#running-the-application)
@@ -20,24 +19,6 @@ The Password Manager is a console-based C++ application designed to securely sto
 - Secure password storage
 - Add, view, and manage password entries
 - Data persistence using local files
-
-## Project Structure
-|-- src/
-| |-- main.cpp
-| |-- PasswordManager.cpp
-| |-- User.cpp
-| |-- PasswordEntry.cpp
-| |-- Database.cpp
-|-- include/
-| |-- PasswordManager.h
-| |-- User.h
-| |-- PasswordEntry.h
-| |-- Database.h
-|-- data/
-| |-- users.dat
-| |-- passwords.dat
-|-- CMakeLists.txt (or Makefile)
-|-- README.md
 
 ## File Descriptions
 - `main.cpp`: The main entry point of the application
