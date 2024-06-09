@@ -13,7 +13,6 @@ class Database {
 public: 
 	Database(); // Constructor
 	~Database(); // Destructor
-
 	static bool saveUser(const User& user);
 	static bool loadUser(User& user, const std::string& username);
 	void loadPasswordEntries();
