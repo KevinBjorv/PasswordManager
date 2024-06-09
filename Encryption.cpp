@@ -120,6 +120,54 @@ namespace crypt {
         }
 		return key;
 	}
+
+    std::string crypt::base64Encode(const std::string& data) {
+        BIO* bio, * b64;
+        BUF_MEM* bufferPtr;
+
+        b64 = BIO_new(BIO_f_base64());
+        bio = BIO_new(BIO_s_mem());
+        bio = BIO_push(b64, bio);
+
+        BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);  // Tell base64 BIO to NOT append newlines
+        BIO_write(bio, data.c_str(), data.length());
+        BIO_flush(bio);
+        BIO_get_mem_ptr(bio, &bufferPtr);
+        BIO_set_close(bio, BIO_NOCLOSE);
+        BIO_free_all(bio);
+
+        std::string result(bufferPtr->data, bufferPtr->length);
+        BUF_MEM_free(bufferPtr);
+        return result;
+    }
+
+    std::string crypt::base64Decode(const std::string& base64) {
+        BIO* bio, * b64;
+        int decodeLen = calcDecodeLength(base64);
+        std::vector<unsigned char> buffer(decodeLen);
+
+        bio = BIO_new_mem_buf(base64.data(), -1);
+        b64 = BIO_new(BIO_f_base64());
+        bio = BIO_push(b64, bio);
+
+        BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+        int length = BIO_read(bio, buffer.data(), base64.size());
+        BIO_free_all(bio);
+
+        return std::string(buffer.begin(), buffer.begin() + length);
+    }
+
+    int crypt::calcDecodeLength(const std::string& base64) {
+        int len = base64.size();
+        int padding = 0;
+
+        if (base64[len - 1] == '=' && base64[len - 2] == '=') //last two chars are =
+            padding = 2;
+        else if (base64[len - 1] == '=') //last char is =
+            padding = 1;
+
+        return (len * 3) / 4 - padding;
+    }
 }
 
 // Path: Encryption.cpp

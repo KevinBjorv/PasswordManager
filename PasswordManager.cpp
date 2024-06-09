@@ -36,11 +36,11 @@ std::shared_ptr<User> PasswordManager::login(const std::string& username, std::s
 }
 
 bool PasswordManager::registerUser(const std::string& newUsername, const std::string& newUserPassword) {
-	std::vector<unsigned char> salt; // Declare a salt vector
-	currentUser = std::make_shared<User>(newUsername, salt); // Pass the salt to the constructor
-	currentUser->generateSalt(); // Generate salt after constructing the object
-
-	std::string encryptedPassword = crypt::encrypt(newUserPassword, newUserPassword, currentUser->getSalt());
+	std::vector<unsigned char> salt;
+	currentUser = std::make_shared<User>(newUsername, salt);
+	currentUser->generateSalt();
+	std::string passwordHash = crypt::hashPassword(newUserPassword);  // Ensure this function correctly hashes the password
+	currentUser->setPasswordHash(passwordHash);
 
 	if (Database::saveUser(*currentUser)) {
 		std::cout << "User registered successfully" << std::endl;

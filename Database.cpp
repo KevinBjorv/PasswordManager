@@ -25,7 +25,8 @@ bool Database::saveUser(const User& user) {
 		nlohmann::json entryJson;
 		entryJson["siteName"] = entry.getSiteName();
 		entryJson["username"] = entry.getUsername();
-		entryJson["password"] = entry.getEncryptedPassword();
+		entryJson["password"] = crypt::base64Encode(entry.getEncryptedPassword()); // Encode to Base64
+
 		j["passwordEntries"].push_back(entryJson);
     }
     std::string userDirectory = global.getBaseDirectory() + "/Resources/Users/" + user.getUsername() + ".json";
@@ -40,23 +41,22 @@ bool Database::saveUser(const User& user) {
 
 bool Database::loadUser(User& user, const std::string& username) {
 	Global global;
-	std::string filePath = global.getBaseDirectory() + "/Resources/Users/" + username + ".json";
-	std::ifstream file(filePath);
-	if (!file.is_open()) return false;
+    std::string filePath = global.getBaseDirectory() + "/Resources/Users/" + username + ".json";
+    std::ifstream file(filePath);
+    if (!file.is_open()) return false;
 
-	nlohmann::json j;
-	file >> j;
+    nlohmann::json j;
+    file >> j;
 
-	user.setUsername(j["username"]); 
-	user.setPasswordHash(j["passwordHash"]);
-	//user.clearPasswordEntries(); // Clear any existing password entries
+    user.setUsername(j["username"]);
+    user.setPasswordHash(j["passwordHash"]); // Decode this from Base64 if it was encoded
 
-	for (const auto& entryJson : j["passwordEntries"]) {
-		PasswordEntry entry(entryJson["siteName"], entryJson["username"], entryJson["password"]);
-		user.addPasswordEntry(entry);
-	}
-	file.close();
-	return true;
+    for (const auto& entryJson : j["passwordEntries"]) {
+        PasswordEntry entry(entryJson["siteName"], entryJson["username"], crypt::base64Decode(entryJson["password"]));
+        user.addPasswordEntry(entry);
+    }
+    file.close();
+    return true;
 }
 
 void Database::loadPasswordEntries() {
