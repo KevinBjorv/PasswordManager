@@ -36,9 +36,11 @@ std::shared_ptr<User> PasswordManager::login(const std::string& username, std::s
 }
 
 bool PasswordManager::registerUser(const std::string& newUsername, const std::string& newUserPassword) {
-	currentUser = std::make_shared<User>(newUsername);
-	currentUser->generateSalt();  // Ensure this method exists and correctly generates and stores a salt
-	std::string encryptedPassword = crypt::encrypt(newUserPassword, newUserPassword, currentUser->getSalt());  // Using the password itself as the secret here for simplicity
+	std::vector<unsigned char> salt; // Declare a salt vector
+	currentUser = std::make_shared<User>(newUsername, salt); // Pass the salt to the constructor
+	currentUser->generateSalt(); // Generate salt after constructing the object
+
+	std::string encryptedPassword = crypt::encrypt(newUserPassword, newUserPassword, currentUser->getSalt());
 
 	if (Database::saveUser(*currentUser)) {
 		std::cout << "User registered successfully" << std::endl;
