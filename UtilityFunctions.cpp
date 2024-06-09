@@ -1,4 +1,13 @@
 #include "UtilityFunctions.h"
+#include <iostream>
+#include <string>
+#include <Windows.h>
+#include <conio.h>
+#include <vector>
+#include <codecvt>
+#include <locale>
+#include <algorithm>
+#include <cctype>
 
 namespace utility{
 
@@ -24,6 +33,16 @@ namespace utility{
 		#else 
 				std::cerr << "Unsupported Console/OS" << endl;
 		#endif
+	}
+
+	std::string utility::convertToLowercase(const std::string& str) {
+		std::string lowercaseStr = str;  // Create a copy of the input string to transform
+
+		// Transform each character to lowercase
+		std::transform(lowercaseStr.begin(), lowercaseStr.end(), lowercaseStr.begin(),
+			[](unsigned char c) -> char { return std::tolower(c); });
+
+		return lowercaseStr;  // Return the transformed string
 	}
 }
 
