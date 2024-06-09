@@ -16,3 +16,5 @@ private:
 	void handleMainMenuChoice(std::string& choice); // Converts text choice to int
 };
 
+// MenuManger.h
+

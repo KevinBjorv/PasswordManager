@@ -28,3 +28,5 @@ private:
 	std::vector<std::shared_ptr<User>> users;
 	std::vector<std::shared_ptr<PasswordEntry>> passwordEntries;
 };
+
+// Path: Database.h

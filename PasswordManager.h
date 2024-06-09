@@ -16,12 +16,9 @@ protected:
 	std::shared_ptr<User> login(const std::string& username, std::string& userPassword);
 	bool registerUser(const std::string& newUsername, const std::string& newUserPassword);
 
-	// PasswordEntry methods
-	void addPasswordEntry();
-	void viewPasswordEntries();
-
 	// Class objects
 	std::shared_ptr<Database> database;
 	std::shared_ptr<User> currentUser;
 };
 
+// Path: PasswordManager.h

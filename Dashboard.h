@@ -9,15 +9,13 @@ public: // Make protected
 	// Display Dashboard
 	void open();
 
-
 private:
-
-	void addPassword();
-	void viewPasswords();
-
+	// Current user
 	std::shared_ptr<User> currentUser;
 
 	// Menu options
-
-
+	void addPassword();
+	void viewPasswords();
 };
+
+// Path: Dashboard.h

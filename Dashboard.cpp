@@ -1,4 +1,5 @@
 #include "Dashboard.h"
+#include "Encryption.h"
 #include <iostream>
 
 Dashboard::Dashboard(std::shared_ptr<User> currentUser)
@@ -33,15 +34,19 @@ void Dashboard::open() {
 }
 
 void Dashboard::viewPasswords() {
+    if (!currentUser) {
+        std::cout << "User object is not valid. Please log in." << std::endl;
+        return;
+    }
+
     const auto& entries = currentUser->getPasswordEntries();
     if (entries.empty()) {
         std::cout << "No passwords stored.\n";
     }
     else {
         for (const auto& entry : entries) {
-            std::cout << "Site: " << entry.getSiteName()
-                << ", Username: " << entry.getUsername()
-                << ", Password: " << entry.getPassword() << "\n";
+            std::string decryptedPassword = crypt::decrypt(entry.getEncryptedPassword(), currentUser->getPasswordHash(), currentUser->getSalt());
+            std::cout << "Site: " << entry.getSiteName() << ", Username: " << entry.getUsername() << ", Password: " << decryptedPassword << std::endl;
         }
     }
 }
@@ -55,7 +60,9 @@ void Dashboard::addPassword() {
     std::cout << "Enter password: ";
     std::cin >> password;
 
-    PasswordEntry entry(siteName, username, password);
+    std::string encryptedPassword = crypt::encrypt(password, currentUser->getPasswordHash(), currentUser->getSalt());
+
+    PasswordEntry entry(siteName, username, encryptedPassword);
     currentUser->addPasswordEntry(entry);
 
     if (Database::saveUser(*currentUser)) {
@@ -65,3 +72,5 @@ void Dashboard::addPassword() {
         std::cout << "Error saving password entry.\n";
     }
 }
+
+// Path: Dashboard.cpp

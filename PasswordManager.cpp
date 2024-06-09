@@ -16,7 +16,7 @@ void PasswordManager::run() {
 }
 
 std::shared_ptr<User> PasswordManager::login(const std::string& username, std::string& userPassword) {
-	std::string hashedPassword = hashPassword(userPassword);
+	std::string hashedPassword = crypt::hashPassword(userPassword);
 	currentUser = std::make_shared<User>();
 
 	if (Database::loadUser(*currentUser, username) && currentUser->getPasswordHash() == hashedPassword) { 
@@ -36,8 +36,9 @@ std::shared_ptr<User> PasswordManager::login(const std::string& username, std::s
 }
 
 bool PasswordManager::registerUser(const std::string& newUsername, const std::string& newUserPassword) {
-	std::string hashedPassword = hashPassword(newUserPassword);
-	currentUser = std::make_shared<User>(newUsername, hashedPassword);
+	currentUser = std::make_shared<User>(newUsername);
+	currentUser->generateSalt();  // Ensure this method exists and correctly generates and stores a salt
+	std::string encryptedPassword = crypt::encrypt(newUserPassword, newUserPassword, currentUser->getSalt());  // Using the password itself as the secret here for simplicity
 
 	if (Database::saveUser(*currentUser)) {
 		std::cout << "User registered successfully" << std::endl;
@@ -45,46 +46,10 @@ bool PasswordManager::registerUser(const std::string& newUsername, const std::st
 	}
 	else {
 		std::cout << "User registration failed" << std::endl;
-		currentUser.reset(); // Reset the shared pointer
+		currentUser.reset();
 		return false;
 	}
 }
 
-void PasswordManager::addPasswordEntry() {
-	if (!currentUser) {
-		std::cout << "You need to log in to perform this action" << std::endl;
-		return;
-	}
-
-	std::string siteName, username, password;
-	std::cout << "Enter site name: ";
-	std::cin >> siteName;
-	std::cout << "Enter username: ";
-	std::cin >> username;
-	std::cout << "Enter password: ";
-	std::cin >> password;
-
-	PasswordEntry entry(siteName, username, password);
-	currentUser->addPasswordEntry(entry);
-
-	if (true){ // Temp debug
-		std::cout << "Password entry added successfully" << std::endl;
-	}
-	else {
-		std::cerr << "Error saving password entry" << std::endl;
-	}
-}
-
-void PasswordManager::viewPasswordEntries() {
-	if (!currentUser) {
-		std::cout << "You need to log in first." << std::endl;
-		return;
-	}
-
-	const auto& entries = currentUser->getPasswordEntries();
-	for (const auto& entry : entries) {
-		std::cout << "Site: " << entry.getSiteName() << ", Username: " << entry.getUsername() << ", Password: " << entry.getPassword() << std::endl;
-	}
-}
 
 // Path: PasswordManager.cpp

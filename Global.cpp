@@ -22,4 +22,4 @@ std::string Global::getBaseDirectory() {
 	return fullPath; // Return the base directory
 }
 
-
+// Path: Global.cpp

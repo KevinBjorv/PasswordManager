@@ -1,14 +1,9 @@
 {
     "passwordEntries": [
         {
-            "password": "Kevinpot008",
+            "password": "Kevinpot",
             "siteName": "Google.com",
-            "username": "Kevinbjorvand@gmail.com"
-        },
-        {
-            "password": "Kevinpotsen112",
-            "siteName": "ChatGPT.com",
-            "username": "Kevinbjorvand@gmail.com"
+            "username": "KevinBjorv"
         }
     ],
     "passwordHash": "c83c47c6cdcbb3ab87776bf0ac34f24c270f28cdcf3cb54a34b0e77026ed7388",
