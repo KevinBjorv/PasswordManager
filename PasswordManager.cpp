@@ -17,9 +17,10 @@ void PasswordManager::run() {
 
 std::shared_ptr<User> PasswordManager::login(const std::string& username, std::string& userPassword) {
 	std::string hashedPassword = crypt::hashPassword(userPassword);
+	std::string hashedUsername = crypt::hashPassword(username);
 	currentUser = std::make_shared<User>();
 
-	if (Database::loadUser(*currentUser, username) && currentUser->getPasswordHash() == hashedPassword) { 
+	if (Database::loadUser(*currentUser, hashedUsername) && currentUser->getPasswordHash() == hashedPassword && currentUser->getUsernameHash() == hashedUsername) {
 		std::cout << "Login successful" << std::endl;
 		if (currentUser) {
 			return currentUser; // Return the shared pointer
@@ -39,8 +40,10 @@ bool PasswordManager::registerUser(const std::string& newUsername, const std::st
 	std::vector<unsigned char> salt;
 	currentUser = std::make_shared<User>(newUsername, salt);
 	currentUser->generateSalt();
-	std::string passwordHash = crypt::hashPassword(newUserPassword);  // Ensure this function correctly hashes the password
+	std::string passwordHash = crypt::hashPassword(newUserPassword); 
 	currentUser->setPasswordHash(passwordHash);
+	std::string usernameHash = crypt::hashPassword(newUsername);
+	currentUser->setUsernameHash(usernameHash);
 
 	if (Database::saveUser(*currentUser)) {
 		std::cout << "User registered successfully" << std::endl;

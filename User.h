@@ -12,13 +12,13 @@ public:
 	~User() = default;
 
 	// Getters
-	std::string getUsername() const;
+	std::string getUsernameHash() const;
 	std::string getPasswordHash() const;
 	const std::vector<PasswordEntry>& getPasswordEntries() const;
 	std::vector<unsigned char> getSalt() const;
 
 	// Setters
-	void setUsername(const std::string& username);
+	void setUsernameHash(const std::string& username);
 	void setPasswordHash(const std::string& passwordHash);
 	void setSalt(const std::vector<unsigned char>& newSalt);
 
@@ -28,7 +28,7 @@ public:
 	// Generate a new salt
 	void generateSalt(size_t length = 16);
 private: 
-	std::string username;
+	std::string usernameHash;
 	std::string passwordHash;
 	std::vector<PasswordEntry> passwordEntries;
 	std::vector<unsigned char> salt;

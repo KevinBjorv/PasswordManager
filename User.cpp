@@ -3,7 +3,7 @@
 #include <nlohmann/json.hpp>
 
 User::User(const std::string& username, const std::vector<unsigned char>& salt)
-	: username(username), salt(salt) {
+	: usernameHash(usernameHash), salt(salt) {
 	// Constructor implementation, possibly initialize other members or perform actions.
 }
 void User::generateSalt(size_t length) {
@@ -19,16 +19,16 @@ void User::setSalt(const std::vector<unsigned char>& newSalt) {
 	salt = newSalt;
 }
 
-std::string User::getUsername() const {
-	return username;
+std::string User::getUsernameHash() const {
+	return usernameHash;
 }
 
 std::string User::getPasswordHash() const {
 	return passwordHash;
 }
 
-void User::setUsername(const std::string& username) {
-	this->username = username;
+void User::setUsernameHash(const std::string& username) {
+	usernameHash = username;
 }
 
 void User::setPasswordHash(const std::string& passwordHash) {
