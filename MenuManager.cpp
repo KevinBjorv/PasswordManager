@@ -50,6 +50,7 @@ void MenuManager::displayRegisterUser() {
 	std::cin >> newUsername;
 	std::cout << "Enter password: ";
 	std::cin >> newPassword;
+	std::cin.clear();
 
 	if (registerUser(newUsername, newPassword)) {
 		std::cout << "Registration successful\n";
@@ -72,7 +73,6 @@ void MenuManager::displayLogin() {
 	std::cin >> username;
 	std::cout << "Enter password: ";
 	std::cin >> password;
-
 	std::shared_ptr<User> user = login(username, password);
 	if (user) {
 		Dashboard dashboard(user);

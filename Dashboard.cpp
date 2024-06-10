@@ -2,9 +2,12 @@
 #include "Encryption.h"
 #include "ColorDefinitons.h"
 #include "UtilityFunctions.h"
+#include "MenuManager.h"
 #include <iostream>
 #include <conio.h>
-#include "MenuManager.h"
+#include <ctime>
+#include <random>
+#include <cctype>
 
 Dashboard::Dashboard(std::shared_ptr<User> currentUser)
 	: currentUser(currentUser) {
@@ -13,7 +16,6 @@ Dashboard::Dashboard(std::shared_ptr<User> currentUser)
 void Dashboard::open() {
     utility::setConsoleTitle("Password Manager - Dashboard");
     utility::clearScreen();
-
     MenuManager menu;
 
     std::string choice;
@@ -21,7 +23,8 @@ void Dashboard::open() {
         std::cout << ANSI_BOLD_HIGH_INTENSITY_BLUE << "Dashboard Menu\n" << RESET;
         std::cout << ANSI_HIGH_INTENSITY_CYAN << "1. View Passwords\n" << RESET;
         std::cout << ANSI_HIGH_INTENSITY_GREEN << "2. Add Password\n" << RESET;
-        std::cout << ANSI_BOLD_HIGH_INTENSITY_RED << "3. Log out\n" << RESET;
+        std::cout << ANSI_HIGH_INTENSITY_YELLOW << "3. Generate password\n" << RESET;
+        std::cout << ANSI_BOLD_HIGH_INTENSITY_RED << "4. Log out\n" << RESET;
         std::cout << ANSI_UNDERLINE_WHITE << "Enter choice: " << RESET;
         std::cin >> choice;
 
@@ -33,8 +36,12 @@ void Dashboard::open() {
         else if (choice == "2" || choice == "add password") {
 			utility::clearScreen();
             addPassword();
+		}
+        else if (choice == "3" || choice == "generate password") {
+            utility::clearScreen();
+			openGeneratePasswordMenu();
         }
-        else if (choice == "3" || choice == "log out") {
+        else if (choice == "4" || choice == "log out") {
 			currentUser.reset();
 			utility::clearScreen();
             menu.displayMainMenu();
@@ -50,6 +57,7 @@ void Dashboard::open() {
 
 void Dashboard::viewPasswords() {
     try {
+        utility::setConsoleTitle("Password Manager - View Passwords");
     if (!currentUser) {
         std::cerr << RED << "User object is not valid. Please log in." << std::endl << RESET;
         return;
@@ -65,9 +73,12 @@ void Dashboard::viewPasswords() {
                 std::cout << RED << "Failed to decrypt site information" << std::endl;
                 continue;
             }
-            std::cout << "Site: " << ANSI_BOLD_WHITE << entry.getSiteName() << RESET << ", Username: " << ANSI_BOLD_WHITE << entry.getUsername() << RESET << ", Password: " << ANSI_BOLD_WHITE << decryptedPassword << std::endl;
+            std::cout << "Site: " << ANSI_BOLD_WHITE << entry.getSiteName() << RESET << ", Username: " << ANSI_BOLD_WHITE << entry.getUsername() << RESET << ", Password: " << ANSI_BOLD_WHITE << decryptedPassword << RESET;
+            if (!entry.getNote().empty()) std::cout << ", Note: " << ANSI_BOLD_WHITE << entry.getNote() << RESET << "\n";
         }
-        char temp = _getch();
+		std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.get(); // Wait for user to press enter
         utility::clearScreen();
     }
 } 
@@ -82,17 +93,20 @@ void Dashboard::viewPasswords() {
 
 void Dashboard::addPassword() {
     try {
-        std::string siteName, username, password;
+        utility::setConsoleTitle("Password Manager - Add Password");
+        std::string siteName, username, password, note;
         std::cout << "Enter site name: ";
         std::cin >> siteName;
         std::cout << "Enter username: ";
         std::cin >> username;
         std::cout << "Enter password: ";
         std::cin >> password;
+        std::cout << "Enter note (optional): ";
+        std::cin >> note;
 
         std::string encryptedPassword = crypt::encrypt(password, currentUser->getPasswordHash(), currentUser->getSalt());
 
-        PasswordEntry entry(siteName, username, encryptedPassword);
+        PasswordEntry entry(siteName, username, encryptedPassword, note);
         currentUser->addPasswordEntry(entry);
 
         utility::clearScreen();
@@ -113,6 +127,41 @@ void Dashboard::addPassword() {
         std::cerr << RED << "Unknown exception occurred when trying to add password entry" << RESET << "\n";
         return;
     }
+}
+
+void Dashboard::openGeneratePasswordMenu() {
+	utility::setConsoleTitle("Password Manager - Generate Password");
+    int amount;
+	std::cout << "Enter the amount of password you'd like to generate: ";
+    std::cin >> amount;
+
+    std::string password;
+    for (size_t i = 0; i < amount; i++) {
+        password = generatePassword();
+		std::cout << i + 1 << ": " << password << "\n";
+    }
+}
+ 
+std::string Dashboard::generatePassword(int length, bool includeSpecialChars, bool includeUppercase, bool includeNumbers) {
+	const std::string lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+	const std::string uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const std::string numbers = "0123456789";
+	const std::string specialChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+	std::string characters = lowercaseChars;
+	if (includeUppercase) characters += uppercaseChars;
+	if (includeNumbers) characters += numbers;
+	if (includeSpecialChars) characters += specialChars;
+
+    std::random_device rd;
+	std::mt19937 generator(rd());
+	std::uniform_int_distribution<> distribution(0, characters.size() - 1);
+
+    std::string password;
+    for (int i = 0; i < length; i++) {
+        password += characters[distribution(generator)];
+    }
+    return password;
 }
 
 // Path: Dashboard.cpp

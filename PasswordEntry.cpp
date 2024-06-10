@@ -1,8 +1,6 @@
 #include "PasswordEntry.h"
-PasswordEntry::PasswordEntry(const std::string& siteName, const std::string& username, const std::string& encryptedPassword)
-	: siteName(siteName), username(username), encryptedPassword(encryptedPassword) {
-	
-	// Constructor
+PasswordEntry::PasswordEntry(const std::string& siteName, const std::string& username, const std::string& encryptedPassword, const std::string& entryNote)
+	: siteName(siteName), username(username), encryptedPassword(encryptedPassword) , note(entryNote) {
 }
 
 std::string PasswordEntry::getSiteName() const {
@@ -28,5 +26,14 @@ void PasswordEntry::setUsername(const std::string& uName) {
 void PasswordEntry::setEncryptedPassword(const std::string& password) {
 	encryptedPassword = password;
 }
+
+void PasswordEntry::setNote(const std::string& note) {
+	this->note = note;
+}
+
+std::string PasswordEntry::getNote() const {
+	return note;
+}
+
 
 // Path: PasswordEntry.cpp

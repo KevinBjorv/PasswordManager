@@ -16,6 +16,9 @@ private:
 	// Menu options
 	void addPassword();
 	void viewPasswords();
+	void openGeneratePasswordMenu();
+
+	std::string generatePassword(int length = 16, bool includeSpecialChars = true, bool includeUppercase = true, bool includeNumbers = true); // 0 length = random
 };
 
 // Path: Dashboard.h

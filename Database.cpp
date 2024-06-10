@@ -16,7 +16,6 @@ Database::~Database() {
 }
 
 bool Database::saveUser(const User& user) {
-	Global global;
 	nlohmann::json j;
 	j["username"] = user.getUsernameHash();
 	j["passwordHash"] = user.getPasswordHash();
@@ -26,10 +25,11 @@ bool Database::saveUser(const User& user) {
 		entryJson["siteName"] = entry.getSiteName();
 		entryJson["username"] = entry.getUsername();
 		entryJson["password"] = crypt::base64Encode(entry.getEncryptedPassword()); // Encode to Base64
+		entryJson["note"] = entry.getNote();
 
 		j["passwordEntries"].push_back(entryJson);
     }
-    std::string userFilePath = global.getBaseDirectory() + "/Resources/Users/" + user.getUsernameHash() + ".json";
+    std::string userFilePath = global::getBaseDirectory() + "/Resources/Users/" + user.getUsernameHash() + ".json";
 	std::ofstream userFile(userFilePath);
 	if (!userFile.is_open()) {
 		return false;
@@ -40,8 +40,7 @@ bool Database::saveUser(const User& user) {
 }
 
 bool Database::loadUser(User& user, const std::string& username) {
-	Global global;
-    std::string userFilePath = global.getBaseDirectory() + "/Resources/Users/" + username + ".json";
+    std::string userFilePath = global::getBaseDirectory() + "/Resources/Users/" + username + ".json";
     std::ifstream userFile(userFilePath);
     if (!userFile.is_open()) return false;
 
@@ -54,7 +53,7 @@ bool Database::loadUser(User& user, const std::string& username) {
     user.setPasswordHash(j["passwordHash"]); 
 
     for (const auto& entryJson : j["passwordEntries"]) {
-        PasswordEntry entry(entryJson["siteName"], entryJson["username"], crypt::base64Decode(entryJson["password"]));
+		PasswordEntry entry(entryJson["siteName"], entryJson["username"], crypt::base64Decode(entryJson["password"]), entryJson["note"]);
         user.addPasswordEntry(entry);
     }
 	userFile.close();

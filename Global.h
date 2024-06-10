@@ -2,10 +2,7 @@
 
 #include <string>
 
-
-class Global {
-public: 
+namespace global{
 	std::string getBaseDirectory();
-};
-
+}
 // Path: Global.h
